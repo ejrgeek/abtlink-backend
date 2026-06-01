@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+}
+
+enum LinkStatus {
+  ACTIVE
+  ARCHIVED
+  EXPIRED
+  BLOCKED
+}
+
+enum SubscriptionType {
+  MONTHLY
+  ANNUAL
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELED
+}
+
+model User {
+  id              String          @id @default(uuid())
+  name            String
+  email           String          @unique
+  username        String          @unique
+  passwordHash    String
+  role            UserRole        @default(CUSTOMER)
+  emailVerifiedAt DateTime?
+  isActive        Boolean         @default(true)
+  deletedAt       DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  preference      UserPreference?
+  links           Link[]
+  clicks          LinkClick[]
+  subscriptions   Subscription[]
+}
+
+model UserPreference {
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+  qrCodeAutoCreate     Boolean  @default(true)
+  publicProfileEnabled Boolean  @default(false)
+  defaultSlugStrategy  String   @default("RANDOM")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  deletedAt            DateTime?
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Link {
+  id          String      @id @default(uuid())
+  userId      String
+  originalUrl String
+  domain      String
+  slug        String
+  shortUrl    String
+  title       String?
+  description String?
+  status      LinkStatus  @default(ACTIVE)
+  clickCount  Int         @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qrCode      QRCode?
+  clicks      LinkClick[]
+
+  @@unique([userId, slug])
+}
+
+model QRCode {
+  id              String   @id @default(uuid())
+  linkId          String   @unique
+  imageBase64     String
+  format          String   @default("png")
+  size            Int      @default(300)
+  foregroundColor String   @default("#000000")
+  backgroundColor String   @default("#ffffff")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+  link            Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+}
+
+model LinkClick {
+  id        String   @id @default(uuid())
+  linkId    String
+  userId    String?
+  ipHash    String?
+  userAgent String?
+  referer   String?
+  country   String?
+  city      String?
+  clickedAt DateTime @default(now())
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Plan {
+  id                     String         @id @default(uuid())
+  name                   String         @unique
+  monthlyPriceCents      Int            @default(0)
+  annualPriceCents       Int            @default(0)
+  monthlyDiscountPercent Int            @default(0)
+  annualDiscountPercent  Int            @default(0)
+  linkLimit              Int            @default(5)
+  qrCodeLimit            Int            @default(5)
+  customDomainLimit      Int            @default(0)
+  analyticsRetentionDays Int            @default(7)
+  isActive               Boolean        @default(true)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  deletedAt              DateTime?
+  subscriptions          Subscription[]
+}
+
+model Subscription {
+  id                  String             @id @default(uuid())
+  userId              String
+  planId              String
+  type                SubscriptionType   @default(MONTHLY)
+  status              SubscriptionStatus @default(ACTIVE)
+  startsAt            DateTime           @default(now())
+  currentPeriodEndsAt DateTime?
+  gracePeriodEndsAt   DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  deletedAt           DateTime?
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                Plan               @relation(fields: [planId], references: [id])
+}
