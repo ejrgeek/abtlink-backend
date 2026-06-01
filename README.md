@@ -69,7 +69,7 @@ http://localhost:3000
 Swagger:
 
 ```text
-http://localhost:3000/api/docs
+http://localhost:3000/api/api-docs
 ```
 
 Health check:
@@ -152,8 +152,8 @@ Publicas:
 
 ```text
 GET  /api/health
-GET  /api/docs
-GET  /api/docs.json
+GET  /api/api-docs
+GET  /api/api-docs.json
 POST /api/auth/register
 POST /api/auth/login
 GET  /api/plans
