@@ -43,35 +43,43 @@ async function resolveAvailableSlug(userId, desiredSlug) {
   throw new AppError("Nao foi possivel gerar um slug unico.", 500);
 }
 
-async function create(req, res) {
-  const originalUrl = validateUrl(String(req.body.originalUrl || "").trim());
-  const slug = await resolveAvailableSlug(req.user.id, req.body.slug);
-  const shortUrl = `${env.shortDomain}/${req.user.username}/${slug}`;
-  const qrCodeBase64 = await generateQRCodeDataUrl(shortUrl);
+async function create(req, res, next) {
+  try {
+    const originalUrl = validateUrl(String(req.body.originalUrl || "").trim());
+    const slug = await resolveAvailableSlug(req.user.id, req.body.slug);
+    const shortUrl = `${env.shortDomain}/${req.user.username}/${slug}`;
+    const qrCodeBase64 = await generateQRCodeDataUrl(shortUrl);
 
-  const link = await LinkModel.createLink({
-    userId: req.user.id,
-    originalUrl,
-    domain: env.shortDomain,
-    slug,
-    shortUrl,
-    title: req.body.title ? String(req.body.title).trim() : null,
-    description: req.body.description ? String(req.body.description).trim() : null,
-    qrCodeBase64,
-  });
+    const link = await LinkModel.createLink({
+      userId: req.user.id,
+      originalUrl,
+      domain: env.shortDomain,
+      slug,
+      shortUrl,
+      title: req.body.title ? String(req.body.title).trim() : null,
+      description: req.body.description ? String(req.body.description).trim() : null,
+      qrCodeBase64,
+    });
 
-  res.status(201).json({
-    message: "Link criado com sucesso.",
-    link,
-  });
+    res.status(201).json({
+      message: "Link criado com sucesso.",
+      link,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
-async function listMine(req, res) {
-  const links = await LinkModel.listByUser(req.user.id);
+async function listMine(req, res, next) {
+  try {
+    const links = await LinkModel.listByUser(req.user.id);
 
-  res.json({
-    links,
-  });
+    res.json({
+      links,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 module.exports = {
