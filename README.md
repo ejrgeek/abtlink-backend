@@ -19,7 +19,7 @@ npm install
 Crie o arquivo `.env` a partir do exemplo:
 
 ```bash
-copy .env.example .env
+cp .env.example .env
 ```
 
 Configure no `.env`:
