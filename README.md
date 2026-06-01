@@ -103,11 +103,6 @@ npm run dev
 
 Sobe a API local com `node --watch`.
 
-```bash
-npm run start
-```
-
-Sobe a API sem watch.
 
 ```bash
 npm run prisma:generate
