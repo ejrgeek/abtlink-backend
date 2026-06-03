@@ -1,20 +1,13 @@
-const env = require("../config/env");
+const logger = require("../utils/logger");
 
 function errorMiddleware(err, req, res, next) {
+  logger.error("Unhandled error:", err);
+  
   const statusCode = err.statusCode || err.status || 500;
-  const response = {
-    message: statusCode >= 500 ? "Erro interno do servidor." : err.message,
-  };
-
-  if (err.details) {
-    response.details = err.details;
-  }
-
-  if (env.nodeEnv !== "production") {
-    response.debug = err.message;
-  }
-
-  res.status(statusCode).json(response);
+  
+  res.status(statusCode).json({
+    message: statusCode >= 500 ? "Internal Server Error" : err.message,
+  });
 }
 
 module.exports = errorMiddleware;
