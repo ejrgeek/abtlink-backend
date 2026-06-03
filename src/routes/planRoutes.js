@@ -1,32 +1,19 @@
 const express = require("express");
-const RedirectController = require("../controllers/redirectController");
+const PlanController = require("../controllers/planController");
 
 const router = express.Router();
 
 /**
  * @openapi
- * /{username}/{slug}:
+ * /api/plans:
  *   get:
  *     tags:
- *       - Redirecionamento
- *     summary: Redireciona para a URL original de um link curto.
- *     parameters:
- *       - in: path
- *         name: username
- *         required: true
- *         schema:
- *           type: string
- *       - in: path
- *         name: slug
- *         required: true
- *         schema:
- *           type: string
+ *       - Planos
+ *     summary: Lista planos ativos.
  *     responses:
- *       302:
- *         description: Redirecionamento para a URL original.
- *       404:
- *         description: Link nao encontrado.
+ *       200:
+ *         description: Lista de planos.
  */
-router.get("/:username/:slug", RedirectController.redirect);
+router.get("/", PlanController.list);
 
 module.exports = router;

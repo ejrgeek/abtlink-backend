@@ -4,8 +4,6 @@ const authenticate = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.use(authenticate);
-
 /**
  * @openapi
  * /api/links:
@@ -42,7 +40,7 @@ router.use(authenticate);
  *       401:
  *         description: Token ausente ou invalido.
  */
-router.post("/", LinkController.create);
+router.post("/", authenticate, LinkController.create);
 
 /**
  * @openapi
@@ -59,6 +57,6 @@ router.post("/", LinkController.create);
  *       401:
  *         description: Token ausente ou invalido.
  */
-router.get("/", LinkController.listMine);
+router.get("/", authenticate, LinkController.listMine);
 
 module.exports = router;

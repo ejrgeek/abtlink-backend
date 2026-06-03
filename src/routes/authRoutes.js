@@ -4,7 +4,6 @@ const authenticate = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-
 /**
  * @openapi
  * /api/auth/register:

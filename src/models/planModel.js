@@ -1,17 +1,17 @@
-const prisma = require('../config/prisma');
+const prisma = require("../config/prisma");
 
 function listActivePlans() {
-    return prisma.plan.findMany({
-        where: {
-            isActive: true,
-            deleteAt: null,
-        },
-        orderBy: {
-            monthlyPriceCents: "asc",
-        },
-    });
+  return prisma.plan.findMany({
+    where: {
+      isActive: true,
+      deletedAt: null,
+    },
+    orderBy: {
+      monthlyPriceCents: "asc",
+    },
+  });
 }
 
 module.exports = {
-    listActivePlans,
-}
+  listActivePlans,
+};

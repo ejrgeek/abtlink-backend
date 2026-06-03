@@ -1,4 +1,4 @@
-const reservedUsernames = new Set(["api", "api-docs", "docs", "health", "admin"]);
+const reservedUsernames = new Set(["api", "docs", "health", "admin"]);
 
 function sanitizeSlug(value) {
   return String(value || "")
