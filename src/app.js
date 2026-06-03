@@ -1,3 +1,6 @@
+require("./instrument");
+const Sentry = require("@sentry/node");
+
 const express = require("express");
 const cors = require("cors");
 const env = require("./config/env");
@@ -16,6 +19,7 @@ app.use(
 
 app.use(express.json({ limit: "1mb" }));
 
+
 /**
  * @openapi
  * /api/health:
@@ -33,6 +37,8 @@ app.get("/api/health", (req, res) => {
     service: "abtlink-backend",
   });
 });
+
+Sentry.setupExpressErrorHandler(app);
 
 app.use("/api", apiRoutes);
 app.use("/api", notFoundMiddleware);
