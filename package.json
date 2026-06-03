@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage",
     "dev": "node --watch src/server.js",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
